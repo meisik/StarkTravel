@@ -41,7 +41,6 @@ export function ConnectWallet() {
         </div>
       )}
 
-      {/* Модальное окно */}
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Choose a wallet</Modal.Title>

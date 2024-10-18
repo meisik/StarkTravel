@@ -66,7 +66,10 @@ const ReviewForm: React.FC = () => {
 
       const userExists = await checkUserExistsInGroup(address || '', group.id);
       if (userExists) {
-        setModalMessage(`User ${address} already left a review for the location ${location}`);
+        setModalMessage(
+          `User ${address ? `${address.substring(0, 5)}...${address.substring(address.length - 5)}` : 'Unknown'} 
+          already left a feedback for the ${location} location`
+        );
         setLoading(false);
         return;
       }
@@ -99,7 +102,7 @@ const ReviewForm: React.FC = () => {
       setModalMessage('Error loading data or adding to a group');
     }
 
-    setLoading(false);
+    setLoading(false);  
   };
 
   return (

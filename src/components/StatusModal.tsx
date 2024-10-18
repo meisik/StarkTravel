@@ -17,7 +17,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
     return (
       <Modal show={showModal} onHide={handleReload} centered>
         <Modal.Body className="d-flex flex-column justify-content-center align-items-center text-center" style={{}}>
-          <h3 className="lead fw-normal mb-3">{modalMessage}</h3>
+          <h3 className="lead fw-normal mb-0">{modalMessage}</h3>
           {loading && <Spinner animation="border" role="status" className="text-primary mt-3" />}
           {!loading && photoLinks.length > 0 && (
             <div>
@@ -29,7 +29,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
             </div>
           )}
           <Button variant="primary" className="mt-4" onClick={handleReload}>
-            Close
+            Close modal
           </Button>
         </Modal.Body>
       </Modal>
