@@ -3,7 +3,6 @@ import { fetchAllGroups } from '../services/pinataService.ts';
 
 interface ReviewInputFormProps {
   username: string;
-  // setUsername: (value: string) => void;
   location: string;
   setLocation: (value: string) => void;
   reviewText: string;
@@ -16,7 +15,6 @@ interface ReviewInputFormProps {
 
 const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   username,
-  // setUsername,
   location,
   setLocation,
   reviewText,
@@ -80,42 +78,41 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
     <form className="needs-validation" noValidate onSubmit={handleSubmit}>
       {isWalletConnected  && (
         <div className="mb-3">
-          <label htmlFor="username" className="form-label">Имя пользователя (кошелек)</label>
+          <label htmlFor="username" className="form-label">Your wallet</label>
           <input
             type="text"
             className="form-control"
             id="username"
             value={username}
-            // onChange={(e) => setUsername(e.target.value)}
             required
             autoComplete='off'
             disabled
           />
-          <div className="invalid-feedback">Пожалуйста, введите имя пользователя.</div>
+          <div className="invalid-feedback">Please enter your wallet.</div>
         </div>
       )}
       <div className="mb-3">
-        <label htmlFor="location" className="form-label">Локация</label>
+        <label htmlFor="location" className="form-label">Location</label>
         <input
           type="text"
           className="form-control"
           id="location"
           value={location}
           onChange={handleLocationChange}
-          onKeyDown={handleKeyDown} // Обработка нажатия клавиш
+          onKeyDown={handleKeyDown}
           required
           autoComplete='off'
         />
-        <div className="invalid-feedback">Пожалуйста, укажите локацию.</div>
+        <div className="invalid-feedback">Please set or choose location.</div>
 
-        {/* Отображение подсказок при наличии совпадений */}
+        {/* Displaying hints when there is a match */}
         {filteredGroups.length > 0 && (
           <ul className="list-group">
             {filteredGroups.map((group, index) => (
               <li
                 key={group}
-                className={`list-group-item ${index === highlightedIndex ? 'active' : ''}`} // Подсветка выбранного элемента
-                onClick={() => handleGroupClick(group)} // Обработка клика на подсказку
+                className={`list-group-item ${index === highlightedIndex ? 'active' : ''}`} // Highlighting of the selected item
+                onClick={() => handleGroupClick(group)} // Handling a click on a hint
               >
                 {group}
               </li>
@@ -125,7 +122,7 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
       </div>
 
       <div className="mb-3">
-        <label htmlFor="reviewText" className="form-label">Текст отзыва</label>
+        <label htmlFor="reviewText" className="form-label">Feedback text</label>
         <textarea
           className="form-control"
           id="reviewText"
@@ -134,11 +131,11 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
           onChange={(e) => setReviewText(e.target.value)}
           required
         />
-        <div className="invalid-feedback">Пожалуйста, введите текст отзыва.</div>
+        <div className="invalid-feedback">Please enter the text of your feedback.</div>
       </div>
 
       <div className="mb-3">
-        <label htmlFor="photos" className="form-label">Загрузить фото (можно выбрать несколько)</label>
+        <label htmlFor="photos" className="form-label">Upload a photo (you can select more than one)</label>
         <input
           type="file"
           className="form-control"
@@ -150,7 +147,7 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
       </div>
 
       <div className="d-grid gap-2">
-        <button type="submit" className="btn btn-primary" disabled={!username || !location || !reviewText}>Отправить отзыв</button>
+        <button type="submit" className="btn btn-primary" disabled={!username || !location || !reviewText}>Send Feedback</button>
       </div>
     </form>
   );

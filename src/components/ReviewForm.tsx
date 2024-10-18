@@ -17,10 +17,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const jwt = process.env.REACT_APP_PINATA_JWT;
 
 const ReviewForm: React.FC = () => {
-  const { address } = useAccount(); // Получаем адрес подключённого кошелька
+  const { address } = useAccount();
   const isWalletConnected = !!address;
-  // const [isUsernameDisabled, setIsUsernameDisabled] = useState<boolean>(true); // Управление состоянием поля
-  // const [username, setUsername] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [reviewText, setReviewText] = useState<string>('');
   const [photos, setPhotos] = useState<FileList | null>(null);
@@ -30,7 +28,7 @@ const ReviewForm: React.FC = () => {
   const [photoLinks, setPhotoLinks] = useState<Array<{ cid: string; name: string }>>([]);
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([]);
 
-  // Функция для получения списка всех групп
+  // Function to get a list of all groups
   useEffect(() => {
     const fetchGroups = async () => {
       const response = await fetchAllGroups();
@@ -44,15 +42,7 @@ const ReviewForm: React.FC = () => {
     fetchGroups();
   }, []);
 
-  // Автоматическая установка адреса в поле имени пользователя при подключении кошелька
-  // useEffect(() => {
-  //   if (address) {
-  //     setUsername(address);  // Устанавливаем адрес кошелька в качестве имени пользователя
-  //   }
-  // }, [address]);
-
   const resetForm = () => {
-    // setUsername('');
     setLocation('');
     setReviewText('');
     setPhotos(null);
@@ -66,26 +56,22 @@ const ReviewForm: React.FC = () => {
     event.preventDefault();
     setLoading(true);
     setShowModal(true);
-    setModalMessage('Выполняется проверка данных...');
-    // console.log("Проверка данных...");
+    setModalMessage('Data validation is performed...');
+
     try {
-        // console.log("Мы зашли в try");
       let group = await checkGroupExists(location);
       if (!group) {
         group = await createGroup(location);
       }
-      // console.log("Проверили что такая группа уже есть");
 
       const userExists = await checkUserExistsInGroup(address || '', group.id);
       if (userExists) {
-        setModalMessage(`Пользователь ${address} уже оставил отзыв для локации ${location}`);
+        setModalMessage(`User ${address} already left a review for the location ${location}`);
         setLoading(false);
         return;
       }
-
-    // console.log("Этап загрузки данных");
       
-      setModalMessage('Загрузка данных в хранилище IPFS...');
+      setModalMessage('Loading data into IPFS storage...');
       
       const timestamp = new Date().toISOString();
       const reviewData = { author: address, location, reviewText, timestamp, photos: [] as string[] };
@@ -106,24 +92,23 @@ const ReviewForm: React.FC = () => {
       const cidsToAdd = [cid, ...reviewData.photos];
       await addCIDsToGroup(cidsToAdd, group.id);
 
-      setModalMessage(`Данные успешно загружены в IPFS и добавлены в локацию ${location}`);
+      setModalMessage(`The data was successfully uploaded to IPFS and added to the location ${location}`);
     } 
     catch (error) {
-      console.error('Ошибка:', error);
-      setModalMessage('Ошибка загрузки данных или добавления в группу');
+      console.error('Error:', error);
+      setModalMessage('Error loading data or adding to a group');
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Оставить отзыв</h1>
+    <div className="container mt-5 mb-5">
+      <h1 className="text-center mb-4">Leave a feedback</h1>
       <div className="card shadow-sm p-4">
         <WalletBar />
         <ReviewInputForm
-            username={address ? `0x${address}` : ''} // Проверяем наличие адреса и задаем пустую строку, если его нет
-            // setUsername={setUsername}
+            username={address ? `0x${address}` : ''}
             location={location}
             setLocation={setLocation}
             reviewText={reviewText}

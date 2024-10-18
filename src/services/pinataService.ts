@@ -1,6 +1,6 @@
 const jwt = process.env.REACT_APP_PINATA_JWT;
 
-// Проверка наличия группы
+// Group availability check
 export const checkGroupExists = async (location: string) => {
   const response = await fetch("https://api.pinata.cloud/groups", {
     headers: {
@@ -15,7 +15,7 @@ export const checkGroupExists = async (location: string) => {
   return null;
 };
 
-// Создание новой группы
+// Create new group
 export const createGroup = async (location: string) => {
   const response = await fetch("https://api.pinata.cloud/groups", {
     method: "POST",
@@ -29,18 +29,18 @@ export const createGroup = async (location: string) => {
   });
 
   if (!response.ok) {
-    throw new Error('Не удалось создать группу');
+    throw new Error('Failed to create a group');
   }
 
   const data = await response.json();
   if (!data.id) {
-    throw new Error('Группа создана, но ID отсутствует');
+    throw new Error(' A group is created, but there is no ID');
   }
 
   return data;
 };
 
-// Проверка наличия пользователя в группе
+//  Checking if a user is in a group
 export const checkUserExistsInGroup = async (username: string, groupId: string) => {
   const response = await fetch(`https://api.pinata.cloud/data/pinList?groupId=${groupId}&status=pinned`, {
     method: 'GET',
@@ -75,7 +75,7 @@ export const checkUserExistsInGroup = async (username: string, groupId: string) 
   return false;
 };
 
-// Загрузка отзыва в IPFS
+// Uploading review to IPFS
 export const uploadReviewToIPFS = async (formData: FormData) => {
   const response = await fetch(`https://api.pinata.cloud/pinning/pinFileToIPFS`, {
     method: "POST",
@@ -86,14 +86,14 @@ export const uploadReviewToIPFS = async (formData: FormData) => {
   });
 
   if (!response.ok) {
-    throw new Error('Ошибка загрузки отзыва в IPFS');
+    throw new Error('Error loading a review in IPFS');
   }
 
   const data = await response.json();
   return data.IpfsHash;
 };
 
-// Добавление CIDs в группу
+// Adding CIDs to a group
 export const addCIDsToGroup = async (cids: string[], groupId: string) => {
   const response = await fetch(`https://api.pinata.cloud/groups/${groupId}/cids`, {
     method: "PUT",
@@ -105,7 +105,7 @@ export const addCIDsToGroup = async (cids: string[], groupId: string) => {
   });
 
   if (!response.ok && !(response.status === 200 && response.statusText === "OK")) {
-    throw new Error('Ошибка добавления CIDs в группу');
+    throw new Error('Error adding CIDs to a group');
   }
 };
 
@@ -117,10 +117,10 @@ export const fetchAllGroups = async () => {
   });
 
   const data = await response.json();
-  // console.log('Response Data from Pinata:', data); // Проверим, что именно приходит
+  // console.log('Response Data from Pinata:', data); // Let's see exactly what's coming in
 
-  if (Array.isArray(data)) { // Проверяем, что data является массивом
-    // console.log('Fetched groups:', data); // Логирование массива
+  if (Array.isArray(data)) { // Check that data is an array
+    // console.log('Fetched groups:', data); // Array Logging
     return data;
   } else {
     // console.log('No groups found or unexpected format');

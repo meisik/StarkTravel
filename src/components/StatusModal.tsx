@@ -11,7 +11,7 @@ interface StatusModalProps {
 
 const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMessage, photoLinks, handleClose }) => {
     const handleReload = () => {
-      window.location.reload(); // Перезагрузка страницы
+      window.location.reload();
     };
   
     return (
@@ -21,7 +21,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
           {loading && <Spinner animation="border" role="status" className="text-primary mt-3" />}
           {!loading && photoLinks.length > 0 && (
             <div>
-              <p className='text-success fw-bolder'>Загруженные фото:</p>
+              <p className='text-success fw-bolder'>Uploaded photos:</p>
               {photoLinks.map((photo) => (
                 <a className='success-photo' key={photo.cid} href={`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${photo.cid}`} target="_blank" rel="noopener noreferrer">
                 {photo.name}</a>
@@ -29,7 +29,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
             </div>
           )}
           <Button variant="primary" className="mt-4" onClick={handleReload}>
-            Закрыть окно
+            Close
           </Button>
         </Modal.Body>
       </Modal>

@@ -12,30 +12,18 @@ export function ConnectWallet() {
   const braavos_svg = process.env.REACT_APP_BRAAVOS;
   const argent_svg = process.env.REACT_APP_ARGENT;
 
-  // Функция для закрытия и открытия модального окна
+  // Function to close and open a modal window
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  // Закрытие модального окна при успешном подключении кошелька
+  // Closing the modal on successful wallet connection
   useEffect(() => {
     if (address) {
       handleClose();
     }
   }, [address]);
 
-  // Функция для открытия ссылки установки кошелька
-  const handleInstallWallet = (connectorId) => {
-    const urls = {
-      braavos:
-        "https://tinyurl.com/4yfnuy22",
-      argent:
-        "https://tinyurl.com/2mhvcawb",
-    };
-
-    window.open(urls[connectorId], "_blank");
-  }
-
-  // Форматирование адреса для отображения
+  // Formatting an wallet address for display
   const formatAddress = (address) =>
     `${address.substring(0, 5)}...${address.substring(address.length - 5)}`;
 
@@ -43,12 +31,12 @@ export function ConnectWallet() {
     <div>
       {!address ? (
         <a onClick={handleShow} className="btn btn-primary mb-3">
-          <img src={logo} alt="Logo" style={{ width: "24px", height: "24px", marginRight: "4px" }} /> Подключить кошелек
+          <img src={logo} alt="Logo" style={{ width: "24px", height: "24px", marginRight: "4px" }} /> Connect Walet
         </a>
       ) : (
         <div className="d-grid gap-2 d-md-flex justify-content-md-start mb-3">
           <a onClick={() => disconnect()} className="btn btn-danger mb-3">
-            Отключить кошелек {formatAddress(address)}
+            Disconnet Wallet {formatAddress(address)}
           </a>
         </div>
       )}
@@ -56,7 +44,7 @@ export function ConnectWallet() {
       {/* Модальное окно */}
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Выберите кошелек</Modal.Title>
+          <Modal.Title>Choose a wallet</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="d-grid gap-2">
@@ -66,8 +54,8 @@ export function ConnectWallet() {
                   href="#"
                   key={connector.id}
                   onClick={(e) => {
-                    e.preventDefault(); // предотвращаем переход по ссылке
-                    connect({ connector }); // подключаем кошелек, если доступен
+                    e.preventDefault();
+                    connect({ connector });
                   }}
                   className="btn btn-primary mb-2"
                 >
@@ -76,7 +64,7 @@ export function ConnectWallet() {
                     alt={`${connector.id} icon`}
                     style={{ width: "26px", height: "26px", marginRight: "16px" }}
                   />
-                  Подключить {connector.name}
+                  Connect {connector.name}
                 </a>
               ) : (
                 <a
@@ -93,7 +81,7 @@ export function ConnectWallet() {
                     alt={`${connector.id} icon`}
                     style={{ width: "26px", height: "26px", marginRight: "16px" }}
                   />
-                  Установить {connector.name}
+                  Install {connector.name}
                 </a>
               )
             ))}
