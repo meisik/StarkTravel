@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { uploadCompressedPhoto } from './PhotoUploader.tsx';
 import StatusModal from './StatusModal.tsx';
 import WalletBar from './WalletBar.tsx';
-import { useAccount, useConnect, useDisconnect, useProvider } from "@starknet-react/core";
+import SignMessage from './SignMessage.tsx';
+import { useAccount } from "@starknet-react/core";
 import {
   checkGroupExists,
   createGroup,
@@ -106,11 +107,10 @@ const ReviewForm: React.FC = () => {
   };
 
   return (
-    <div className="container mt-5 mb-5">
-      <h1 className="text-center mb-4">Leave a feedback</h1>
-      <div className="card shadow-sm p-4">
-        <WalletBar />
-        <ReviewInputForm
+    <div>
+      {isWalletConnected ? (
+        <div>
+          <ReviewInputForm
             username={address ? `0x${address}` : ''}
             location={location}
             setLocation={setLocation}
@@ -121,7 +121,11 @@ const ReviewForm: React.FC = () => {
             handleSubmit={handleFormSubmit}
             isWalletConnected={isWalletConnected}
           />
-      </div>
+        </div>
+      )
+      : (
+        <WalletBar />
+      )}
 
       <StatusModal
         showModal={showModal}

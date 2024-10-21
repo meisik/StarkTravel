@@ -11,7 +11,8 @@ export function StarknetProvider({ children }) {
   const { connectors } = useInjectedConnectors({
     recommended: [
       argent(),
-      braavos(),
+      braavos(),  
+      // keplr(),
     ],
     includeRecommended: "onlyIfNoConnectors",
     order: "alphabetical",

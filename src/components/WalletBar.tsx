@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
 import { Modal } from "react-bootstrap";
-import logo from '../assets/logo_starknet.svg';
+import logo_starknet from '../assets/logo_starknet.svg';
 
 export function ConnectWallet() {
   const { address } = useAccount();
   const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
   const [showModal, setShowModal] = useState(false);
 
   const braavos_svg = process.env.REACT_APP_BRAAVOS;
@@ -23,22 +22,19 @@ export function ConnectWallet() {
     }
   }, [address]);
 
-  // Formatting an wallet address for display
-  const formatAddress = (address) =>
-    `${address.substring(0, 5)}...${address.substring(address.length - 5)}`;
-
   return (
     <div>
       {!address ? (
-        <a onClick={handleShow} className="btn btn-primary mb-3">
-          <img src={logo} alt="Logo" style={{ width: "24px", height: "24px", marginRight: "4px" }} /> Connect Walet
-        </a>
-      ) : (
-        <div className="d-grid gap-2 d-md-flex justify-content-md-start mb-3">
-          <a onClick={() => disconnect()} className="btn btn-danger mb-3">
-            Disconnet Wallet {formatAddress(address)}
+        <div className="d-grid gap-2 col-6 mx-auto">
+          <a onClick={handleShow} className="btn btn-primary mx-auto ps-4 pe-4">
+            <img src={logo_starknet} 
+              alt="Logo" 
+              style={{ width: "24px", height: "24px", marginRight: "4px" 
+            }} /> Connect Walet
           </a>
         </div>
+      ) : (
+        null
       )}
 
       <Modal show={showModal} onHide={handleClose} centered>
@@ -59,7 +55,10 @@ export function ConnectWallet() {
                   className="btn btn-primary mb-2"
                 >
                   <img
-                    src={connector.id === "braavos" ? braavos_svg : argent_svg}
+                    src={
+                      connector.id === "braavos" ? braavos_svg : argent_svg
+                      // : logo_keplr
+                    }
                     alt={`${connector.id} icon`}
                     style={{ width: "26px", height: "26px", marginRight: "16px" }}
                   />
@@ -67,9 +66,10 @@ export function ConnectWallet() {
                 </a>
               ) : (
                 <a
-                  href={connector.id === 'braavos' 
-                    ? 'https://chromewebstore.google.com/detail/%D0%B1%D1%80%D0%B0%D0%B0%D0%B2%D0%BE%D1%81/jnlgamecbpmbajjfhmmmlhejkemejdma'
-                    : 'https://chromewebstore.google.com/detail/argent-x-starknet-wallet/dlcobpjiigpikoobohmabehhmhfoodbb'}
+                href={connector.id === 'braavos' 
+                  ? 'https://chromewebstore.google.com/detail/%D0%B1%D1%80%D0%B0%D0%B0%D0%B2%D0%BE%D1%81/jnlgamecbpmbajjfhmmmlhejkemejdma'
+                  : 'https://chromewebstore.google.com/detail/argent-x-starknet-wallet/dlcobpjiigpikoobohmabehhmhfoodbb'}
+                  // : 'https://chromewebstore.google.com/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap?hl=en'}
                   target="_blank"
                   rel="noopener noreferrer"
                   key={connector.id}
@@ -89,6 +89,6 @@ export function ConnectWallet() {
       </Modal>
     </div>
   );
-}
+} 
 
 export default ConnectWallet;
