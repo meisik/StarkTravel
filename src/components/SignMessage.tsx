@@ -10,7 +10,7 @@ const SignMessage: React.FC = () => {
   // Структура TypedData для EIP-712 (скорректирована)
   const typedData = {
     domain: {
-      name: 'Starknet Demo', // Название приложения
+      name: 'StarkTravel', // Название приложения
       version: '1',           // Версия
       chainId: shortString.decodeShortString(chain.id.toString()),
     },
@@ -40,13 +40,16 @@ const SignMessage: React.FC = () => {
   };
 
   return (
-    <><p className='d-inline'>
-          <button
-              onClick={(e) => { e.preventDefault(); handleSign(); } }
-              className='btn btn-primary'
-              disabled={isPending}>{isPending ? "Signing..." : "Sign message"}
-          </button>
-      </p>
+    <>
+    {!isSuccess && (
+        <p className='d-inline'>
+            <button
+                onClick={(e) => { e.preventDefault(); handleSign(); } }
+                className='btn btn-primary'
+                disabled={isPending}>{isPending ? "Signing..." : "Sign message"}
+            </button>
+        </p>
+    )}
       <p>
         {isIdle && (
             <div className="alert alert-primary mt-3">
