@@ -2,42 +2,51 @@ import React, { useState } from 'react';
 import { useNetwork, useSignTypedData } from '@starknet-react/core';
 import { shortString, typedData } from "starknet";
 
-const SignMessage: React.FC = () => {
+interface SignMessageProps {
+  location: string;
+  reviewText: string;
+  address: string;
+}
+
+const SignMessage: React.FC<SignMessageProps>= ({ location, reviewText, address }) => {
   const { chain } = useNetwork();
   const { data, isPending, isError, isIdle, isSuccess, signTypedData } = useSignTypedData({});
-  const [signedMessage, setSignedMessage] = useState<string | null>(null); // Состояние для подписанного сообщения
+  const [signedMessage, setSignedMessage] = useState<string | null>(null);
 
-  // Структура TypedData для EIP-712 (скорректирована)
   const typedData = {
     domain: {
-      name: 'StarkTravel', // Название приложения
-      version: '1',           // Версия
+      name: 'StarkTravel',
+      version: '1',
       chainId: shortString.decodeShortString(chain.id.toString()),
     },
     types: {
-      StarkNetDomain: [   // Обязательно определяем тип для домена
+      StarkNetDomain: [
         { name: 'name', type: 'felt' },
         { name: 'version', type: 'felt' },
         { name: 'chainId', type: 'felt' },
       ],
-      Message: [{ name: 'message', type: 'felt' }], // Тип сообщения для подписи
+      Message: [
+        { name: 'user', type: 'felt' },
+        { name: 'location', type: 'felt' },
+        { name: 'review', type: 'felt' }
+      ],
     },
     primaryType: 'Message',
     message: {
-      message: 'This is awesome text'
+      user: address || '',
+      location: location,
+      review: reviewText
     },
   };
 
-  // Обработчик отправки формы
-  const handleSign = async () => {
-    // e.preventDefault();
+  async function handleSign() {
     try {
-      const signature = await signTypedData(typedData); // Подписываем данные
-      setSignedMessage(JSON.stringify(signature)); // Сохраняем результат
+      const signature = await signTypedData(typedData);
+      setSignedMessage(JSON.stringify(signature));
     } catch (error) {
-      console.error('Error signing message:', error); // Обрабатываем ошибки
+      console.error('Error signing message:', error);
     }
-  };
+  }
 
   return (
     <>

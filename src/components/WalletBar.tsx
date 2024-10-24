@@ -30,7 +30,7 @@ export function ConnectWallet() {
             <img src={logo_starknet} 
               alt="Logo" 
               style={{ width: "24px", height: "24px", marginRight: "4px" 
-            }} /> Connect Walet
+            }} /> Connect Wallet
           </a>
         </div>
       ) : (

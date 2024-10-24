@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { uploadCompressedPhoto } from './PhotoUploader.tsx';
 import StatusModal from './StatusModal.tsx';
 import WalletBar from './WalletBar.tsx';
-import SignMessage from './SignMessage.tsx';
-import { useAccount } from "@starknet-react/core";
+import { useAccount, useNetwork, useSignTypedData } from "@starknet-react/core";
+import { shortString, typedData } from "starknet";
 import {
   checkGroupExists,
   createGroup,
@@ -19,17 +19,19 @@ const jwt = process.env.REACT_APP_PINATA_JWT;
 
 const ReviewForm: React.FC = () => {
   const { address } = useAccount();
+  const { chain } = useNetwork();
+  const { data, isPending, isError, isIdle, isSuccess, signTypedDataAsync } = useSignTypedData({});
+  const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const isWalletConnected = !!address;
   const [location, setLocation] = useState<string>('');
   const [reviewText, setReviewText] = useState<string>('');
   const [photos, setPhotos] = useState<FileList | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [modalMessage, setModalMessage] = useState<string>('');
+  const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
   const [photoLinks, setPhotoLinks] = useState<Array<{ cid: string; name: string }>>([]);
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([]);
 
-  // Function to get a list of all groups
   useEffect(() => {
     const fetchGroups = async () => {
       const response = await fetchAllGroups();
@@ -39,7 +41,6 @@ const ReviewForm: React.FC = () => {
         console.log('No groups found');
       }
     };
-
     fetchGroups();
   }, []);
 
@@ -60,45 +61,85 @@ const ReviewForm: React.FC = () => {
     setModalMessage('Data validation is performed...');
 
     try {
-      let group = await checkGroupExists(location);
+      let group = await checkGroupExists(location); 
       if (!group) {
         group = await createGroup(location);
       }
 
       const userExists = await checkUserExistsInGroup(address || '', group.id);
       if (userExists) {
-        setModalMessage(
-          `User ${address ? `${address.substring(0, 5)}...${address.substring(address.length - 5)}` : 'Unknown'} 
-          already left a feedback for the ${location} location`
-        );
+        setModalMessage(<p className="text-danger mb-0">
+    {`User ${address ? `${address.substring(0, 5)}...${address.substring(address.length - 5)}` : 'Unknown'} 
+    already left a feedback for the ${location} location`}
+  </p>);
         setLoading(false);
         return;
       }
-      
-      setModalMessage('Loading data into IPFS storage...');
-      
-      const timestamp = new Date().toISOString();
-      const reviewData = { author: address, location, reviewText, timestamp, photos: [] as string[] };
 
-      if (photos) {
-        const uploadPromises = Array.from(photos).map((photo) => uploadCompressedPhoto(photo, `${jwt}`));
-        const photoData = await Promise.all(uploadPromises);
-        reviewData.photos = photoData.map((photo) => photo.cid);
-        setPhotoLinks(photoData);
+      const typedData = {
+        domain: {
+          name: 'StarkTravel',
+          version: '1',
+          chainId: shortString.decodeShortString(chain.id.toString()),
+        },
+        types: {
+          StarkNetDomain: [
+            { name: 'name', type: 'felt' },
+            { name: 'version', type: 'felt' },
+            { name: 'chainId', type: 'felt' },
+          ],
+          Message: [
+            { name: 'user', type: 'felt' },
+            { name: 'location', type: 'felt' },
+            { name: 'review', type: 'felt' }
+          ],
+        },
+        primaryType: 'Message',
+        message: {
+          user: address || '',
+          location: location,
+          review: reviewText
+        },
+      };
+
+      try {
+        const result = await signTypedDataAsync(typedData);
+        
+        if (result) {
+          setModalMessage('Loading data into IPFS storage...');
+
+          const timestamp = new Date().toISOString();
+          const reviewData = { author: address, location, reviewText, timestamp, photos: [] as string[] };
+
+          if (photos) {
+            const uploadPromises = Array.from(photos).map((photo) => uploadCompressedPhoto(photo, `${jwt}`));
+            const photoData = await Promise.all(uploadPromises);
+            reviewData.photos = photoData.map((photo) => photo.cid);
+            setPhotoLinks(photoData);
+          }
+
+          const jsonBlob = new Blob([JSON.stringify(reviewData)], { type: 'application/json' });
+          const formData = new FormData();
+          formData.append('file', new File([jsonBlob], `${address}.json`));
+
+          const cid = await uploadReviewToIPFS(formData);
+
+          const cidsToAdd = [cid, ...reviewData.photos];
+          await addCIDsToGroup(cidsToAdd, group.id);
+
+          setModalMessage(
+            <p className="text-success mb-0">
+              The data was successfully uploaded to IPFS and added to the location {location}
+            </p>
+          );
+        }
+      } catch (error) {
+        console.error('Signature Error:', error);
+        setModalMessage(
+        <p className="text-danger mb-0">Signature failed or user rejected! Please try again.</p>
+        );
       }
-
-      const jsonBlob = new Blob([JSON.stringify(reviewData)], { type: 'application/json' });
-      const formData = new FormData();
-      formData.append('file', new File([jsonBlob], `${address}.json`));
-
-      const cid = await uploadReviewToIPFS(formData);
-
-      const cidsToAdd = [cid, ...reviewData.photos];
-      await addCIDsToGroup(cidsToAdd, group.id);
-
-      setModalMessage(`The data was successfully uploaded to IPFS and added to the location ${location}`);
-    } 
-    catch (error) {
+    } catch (error) {
       console.error('Error:', error);
       setModalMessage('Error loading data or adding to a group');
     }

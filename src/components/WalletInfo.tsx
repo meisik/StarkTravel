@@ -1,6 +1,6 @@
 import React from "react";
-import SignMessage from './SignMessage.tsx';
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+// import SignMessage from './SignMessage.tsx';
+import { useAccount, useDisconnect } from "@starknet-react/core";
 
 export function WalletInfo() {
     const { address, isConnected } = useAccount();
@@ -21,7 +21,6 @@ export function WalletInfo() {
                     Disconnet Wallet {formatAddress(address)}
                 </button>
             </p>
-            <SignMessage />
         </div>
     )
 }

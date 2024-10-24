@@ -4,7 +4,7 @@ import { Modal, Spinner, Button } from 'react-bootstrap';
 interface StatusModalProps {
   showModal: boolean;
   loading: boolean;
-  modalMessage: string;
+  modalMessage: React.ReactNode;
   photoLinks: Array<{ cid: string; name: string }>;
   handleClose: () => void;
 }
