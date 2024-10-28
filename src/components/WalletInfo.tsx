@@ -1,5 +1,4 @@
 import React from "react";
-// import SignMessage from './SignMessage.tsx';
 import { useAccount, useDisconnect } from "@starknet-react/core";
 
 export function WalletInfo() {
@@ -15,13 +14,16 @@ export function WalletInfo() {
     }
 
     return (
-        <div className="d-grid gap-2 d-md-block mb-3">
-            <p className="d-inline">
-                <button onClick={() => disconnect()} className="btn btn-danger me-2">
-                    Disconnet Wallet {formatAddress(address)}
-                </button>
-            </p>
-        </div>
+        // <div className="d-grid gap-2 d-md-block mb-3">
+        //     <p className="d-inline">
+        //         <button onClick={() => disconnect()} className="btn btn-danger me-2">
+        //             Disconnet Wallet {formatAddress(address)}
+        //         </button>
+        //     </p>
+        // </div>
+        <button onClick={() => disconnect()} className="btn btn-danger">
+            <i className="bi bi-x-circle-fill me-1"></i> Disconnect {formatAddress(address)}
+        </button>
     )
 }
 

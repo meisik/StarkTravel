@@ -24,61 +24,49 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   handleSubmit,
   isWalletConnected
 }) => {
-  const [groups, setGroups] = useState<string[]>([]);
-  const [filteredGroups, setFilteredGroups] = useState<string[]>([]);
-  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+
+  const [labelText, setLabelText] = useState<string>('Check location'); // Label text for Location field
+  const [isLocationDisabled, setIsLocationDisabled] = useState<boolean>(true); // To disable Location field
+  const [isReviewValid, setIsReviewValid] = useState<boolean>(true); // Validation for review length
 
   useEffect(() => {
-    const fetchGroups = async () => {
-      const fetchedGroups = await fetchAllGroups();
-      setGroups(fetchedGroups.map((group: any) => group.name));
+    const fetchAndSetLocation = async () => {
+      // Step 1: Get the title from H1 element (assuming there’s only one H1 on the page)
+      const locationTitle = document.querySelector('h1')?.innerText;
+
+      if (locationTitle) {
+
+        const normalizedLocationTitle = locationTitle.trim().toLowerCase();
+        const groups = await fetchAllGroups();
+        const normalizedGroups = groups.map(group => group.name?.trim().toLowerCase());
+        const groupExists = normalizedGroups.includes(normalizedLocationTitle);
+      
+        if (groupExists) {
+          setLabelText('Check location (already in base)');
+        } else {
+          setLabelText('Check location (will add to base)');
+        }
+      
+        setLocation(locationTitle);
+        setIsLocationDisabled(true);
+      }
     };
 
-    fetchGroups();
-  }, []);
+    fetchAndSetLocation(); // Trigger on component load
+  }, [setLocation]);
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    setLocation(input);
-
-    if (input) {
-      const matchingGroups = groups.filter((group) =>
-        group.toLowerCase().includes(input.toLowerCase())
-      );
-      setFilteredGroups(matchingGroups);
-      setHighlightedIndex(-1);
-    } else {
-      setFilteredGroups([]);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (filteredGroups.length > 0) {
-      if (e.key === 'ArrowDown') {
-        setHighlightedIndex((prevIndex) =>
-          prevIndex < filteredGroups.length - 1 ? prevIndex + 1 : 0
-        );
-      } else if (e.key === 'ArrowUp') {
-        setHighlightedIndex((prevIndex) =>
-          prevIndex > 0 ? prevIndex - 1 : filteredGroups.length - 1
-        );
-      } else if (e.key === 'Enter' && highlightedIndex >= 0) {
-        setLocation(filteredGroups[highlightedIndex]);
-        setFilteredGroups([]);
-      }
-    }
-  };
-
-  const handleGroupClick = (group: string) => {
-    setLocation(group);
-    setFilteredGroups([]); 
+  // Validate review text length
+  const handleReviewTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setReviewText(text);
+    setIsReviewValid(text.length >= 150); // Minimum 150 characters
   };
 
   return (
     <form className="needs-validation" noValidate onSubmit={handleSubmit}>
-      {isWalletConnected  && (
+      {isWalletConnected && (
         <div className="mb-3">
-          <label htmlFor="username" className="form-label">Your wallet</label>
+          <label htmlFor="username" className="form-label">Check your wallet</label>
           <input
             type="text"
             className="form-control"
@@ -91,38 +79,24 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
           <div className="invalid-feedback">Please enter your wallet.</div>
         </div>
       )}
+      
       <div className="mb-3">
-        <label htmlFor="location" className="form-label">Location</label>
+        <label htmlFor="location" className="form-label">{labelText}</label>
         <input
           type="text"
           className="form-control"
           id="location"
           value={location}
-          onChange={handleLocationChange}
-          onKeyDown={handleKeyDown}
+          onChange={(e) => setLocation(e.target.value)}
+          disabled={isLocationDisabled}
           required
           autoComplete='off'
         />
         <div className="invalid-feedback">Please set or choose location.</div>
-
-        {/* Displaying hints when there is a match */}
-        {filteredGroups.length > 0 && (
-          <ul className="list-group">
-            {filteredGroups.map((group, index) => (
-              <li
-                key={group}
-                className={`list-group-item ${index === highlightedIndex ? 'active' : ''}`} // Highlighting of the selected item
-                onClick={() => handleGroupClick(group)} // Handling a click on a hint
-              >
-                {group}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       <div className="mb-3">
-        <label htmlFor="reviewText" className="form-label">Feedback text</label>
+        <label htmlFor="reviewText" className="form-label">Enter review text, minimum 150 characters</label>
         <textarea
           className="form-control"
           id="reviewText"
@@ -147,7 +121,7 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
       </div>
 
       <div className="d-grid gap-2">
-        <button type="submit" className="btn btn-primary" disabled={!username || !location || !reviewText}>Send Feedback</button>
+        <button type="submit" className="btn btn-custom" disabled={!username || !location || (reviewText.length<149)}>Send Feedback</button>
       </div>
     </form>
   );

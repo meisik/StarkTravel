@@ -1,31 +1,29 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import Header from './components/Header.tsx';
+import HomePage from './pages/HomePage.tsx';
+import Footer from './components/Footer.tsx';
+import { BrowserRouter as Router, Route, Routes, Link, useLocation, BrowserRouter } from 'react-router-dom';
 import { useAccount } from "@starknet-react/core";
-import WalletBar from './components/WalletBar.tsx';
-import ReviewInputForm from './components/ReviewInputForm.tsx';
-import ReviewForm from './components/ReviewForm.tsx';
-import WalletInfo from './components/WalletInfo.tsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
+import Page1 from './pages/page1.tsx';
+import Page2 from './pages/page2.tsx';
+import Page3 from './pages/page3.tsx';
 
 const App: React.FC = () => {
-
   const { isConnected, address } = useAccount();
-
   return (
-    <div className="container mt-5 mb-5">
-      <h1 className="text-center mb-4">Leave a feedback</h1>
-      <div className="card shadow-sm p-4">
-        {isConnected ? (
-            <div>
-              <WalletInfo />
-              <ReviewForm />
-            </div>
-          )
-          : (
-            <WalletBar />
-          )}
-      </div>
-    </div>
-  )
+    <main>
+      <Header />
+      <Routes>
+        <Route path='/' element={<HomePage />}/>
+        <Route path='page1' element={<Page1 />}/>
+        <Route path='page2' element={<Page2 />}/>
+        <Route path='page3' element={<Page3 />}/>
+      </Routes>
+      <Footer />
+    </main>
+  );
 };
 
 export default App;

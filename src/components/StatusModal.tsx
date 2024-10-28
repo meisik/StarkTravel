@@ -10,12 +10,14 @@ interface StatusModalProps {
 }
 
 const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMessage, photoLinks, handleClose }) => {
-    const handleReload = () => {
-      window.location.reload();
-    };
+  
+  // Reload Page 
+  // const handleReload = () => {
+    //   window.location.reload();
+    // };
   
     return (
-      <Modal show={showModal} onHide={handleReload} centered>
+      <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Body className="d-flex flex-column justify-content-center align-items-center text-center" style={{}}>
           <h3 className="lead fw-normal mb-0">{modalMessage}</h3>
           {loading && <Spinner animation="border" role="status" className="text-primary mt-3" />}
@@ -28,7 +30,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
               ))}
             </div>
           )}
-          <Button variant="primary" className="mt-4" onClick={handleReload}>
+          <Button variant="primary" className="mt-4" onClick={handleClose}>
             Close modal
           </Button>
         </Modal.Body>
