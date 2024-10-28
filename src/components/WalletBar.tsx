@@ -24,7 +24,7 @@ export function ConnectWallet() {
 
   return (
     <div>
-      {!address ? (
+      {/* {!address ? (
         <div className="d-grid gap-2 col-6 mx-auto">
           <a onClick={handleShow} className="btn btn-primary mx-auto ps-4 pe-4">
             <img src={logo_starknet} 
@@ -33,6 +33,17 @@ export function ConnectWallet() {
             }} /> Connect Wallet
           </a>
         </div>
+      ) : (
+        null
+      )} */}
+      {!address ? (
+        <a onClick={handleShow} className="btn btn-success d-flex align-items-center">
+          {/* <img src={logo_starknet} 
+            alt="Logo" 
+            style={{ width: "24px", height: "24px", marginRight: "6px" 
+          }} /> Connect Wallet */}
+          <i className="bi bi-wallet-fill me-2"></i> Connect Wallet
+        </a>
       ) : (
         null
       )}
@@ -52,7 +63,7 @@ export function ConnectWallet() {
                     e.preventDefault();
                     connect({ connector });
                   }}
-                  className="btn btn-primary mb-2"
+                  className="btn btn-custom mb-2"
                 >
                   <img
                     src={

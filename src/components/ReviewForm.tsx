@@ -31,6 +31,7 @@ const ReviewForm: React.FC = () => {
   const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
   const [photoLinks, setPhotoLinks] = useState<Array<{ cid: string; name: string }>>([]);
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([]);
+  const [isUploadSuccessful, setIsUploadSuccessful] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -45,7 +46,7 @@ const ReviewForm: React.FC = () => {
   }, []);
 
   const resetForm = () => {
-    setLocation('');
+    // setLocation('');
     setReviewText('');
     setPhotos(null);
     const fileInput = document.getElementById('photos') as HTMLInputElement;
@@ -59,6 +60,7 @@ const ReviewForm: React.FC = () => {
     setLoading(true);
     setShowModal(true);
     setModalMessage('Data validation is performed...');
+    setIsUploadSuccessful(false);
 
     try {
       let group = await checkGroupExists(location); 
@@ -76,6 +78,23 @@ const ReviewForm: React.FC = () => {
         return;
       }
 
+      // Функция для конвертации строки в массив `felt`
+      function stringToFeltArray(text: string): number[] {
+        const feltArray: number[] = []; // Явное указание типа массива как `number[]`
+        for (let i = 0; i < text.length; i++) {
+          // Получаем ASCII код каждого символа и добавляем его в массив
+          feltArray.push(text.charCodeAt(i));
+        }
+        return feltArray;
+      }
+
+      // Функция для восстановления строки из массива `felt`
+      function feltArrayToString(feltArray: number[]): string {
+        return feltArray.map((felt) => String.fromCharCode(felt)).join('');
+      }
+
+      const reviewAsFeltArray = stringToFeltArray(reviewText);
+
       const typedData = {
         domain: {
           name: 'StarkTravel',
@@ -91,14 +110,14 @@ const ReviewForm: React.FC = () => {
           Message: [
             { name: 'user', type: 'felt' },
             { name: 'location', type: 'felt' },
-            { name: 'review', type: 'felt' }
+            { name: 'review', type: 'felt*' } // Обозначаем `review` как массив `felt`
           ],
         },
         primaryType: 'Message',
         message: {
           user: address || '',
           location: location,
-          review: reviewText
+          review: reviewAsFeltArray // Передаем массив `felt` для отзыва
         },
       };
 
@@ -128,10 +147,11 @@ const ReviewForm: React.FC = () => {
           await addCIDsToGroup(cidsToAdd, group.id);
 
           setModalMessage(
-            <p className="text-success mb-0">
+            <p className="text-success mb-4">
               The data was successfully uploaded to IPFS and added to the location {location}
             </p>
           );
+          setIsUploadSuccessful(true);
         }
       } catch (error) {
         console.error('Signature Error:', error);
@@ -145,6 +165,13 @@ const ReviewForm: React.FC = () => {
     }
 
     setLoading(false);  
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    if (isUploadSuccessful) {
+      resetForm(); // Сбрасываем форму только при успешной загрузке
+    }
   };
 
   return (
@@ -173,10 +200,7 @@ const ReviewForm: React.FC = () => {
         loading={loading}
         modalMessage={modalMessage}
         photoLinks={photoLinks}
-        handleClose={() => {
-          setShowModal(false);
-          resetForm();
-        }}
+        handleClose={handleModalClose} // handleClose передаётся только в StatusModal
       />
     </div>
   );
