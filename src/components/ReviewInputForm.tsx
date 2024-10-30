@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchAllGroups } from '../services/pinataService.ts';
+import StarRating from './StarRating.tsx';
 
 interface ReviewInputFormProps {
   username: string;
@@ -11,6 +12,8 @@ interface ReviewInputFormProps {
   setPhotos: (files: FileList | null) => void;
   handleSubmit: (event: React.FormEvent) => void;
   isWalletConnected:boolean;
+  rating: number;
+  setRating: (rating: number) => void;
 }
 
 const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
@@ -22,7 +25,9 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   photos,
   setPhotos,
   handleSubmit,
-  isWalletConnected
+  isWalletConnected,
+  rating,
+  setRating,
 }) => {
 
   const [labelText, setLabelText] = useState<string>('Check location'); // Label text for Location field
@@ -59,7 +64,7 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   const handleReviewTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
     setReviewText(text);
-    setIsReviewValid(text.length >= 150); // Minimum 150 characters
+    setIsReviewValid(text.length >= 150);
   };
 
   return (
@@ -106,6 +111,11 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
           required
         />
         <div className="invalid-feedback">Please enter the text of your feedback.</div>
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label">Rate location:</label>
+        <StarRating rating={rating} setRating={setRating} />
       </div>
 
       <div className="mb-3">

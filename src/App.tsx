@@ -6,7 +6,9 @@ import { BrowserRouter as Router, Route, Routes, Link, useLocation, BrowserRoute
 import { useAccount } from "@starknet-react/core";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
+import './skeleton.css';
 import Page1 from './pages/page1.tsx';
 import Page2 from './pages/page2.tsx';
 import Page3 from './pages/page3.tsx';

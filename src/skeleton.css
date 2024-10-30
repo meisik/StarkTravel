@@ -1,0 +1,18 @@
+.skeleton {
+    background-color: #e0e0e0;
+    animation: skeleton-loading 1.2s infinite linear;
+    border-radius: 4px;
+  }
+  
+  @keyframes skeleton-loading {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
