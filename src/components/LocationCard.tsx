@@ -35,7 +35,7 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rat
             <div className="rating">{renderRating()}</div>
           </div>
           <p className="card-text">Category: {category}</p>
-          <Link to={link} className="btn btn-primary mt-auto">
+          <Link to={link} className="btn btn-custom mt-auto">
             View Reviews
           </Link>
         </div>

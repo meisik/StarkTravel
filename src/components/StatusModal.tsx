@@ -17,7 +17,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
     // };
   
     return (
-      <Modal show={showModal} onHide={handleClose} centered>
+      <Modal show={showModal} onHide={handleClose} backdrop="static" centered>
         <Modal.Body className="d-flex flex-column justify-content-center align-items-center text-center" style={{}}>
           <h3 className="lead fw-normal mb-0">{modalMessage}</h3>
           {loading && <Spinner animation="border" role="status" className="text-primary mt-3" />}
@@ -30,9 +30,11 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
               ))}
             </div>
           )}
-          <Button variant="primary" className="mt-4" onClick={handleClose}>
-            Close modal
-          </Button>
+          {!loading && modalMessage !== "Data validation is performed" && (
+            <Button variant="primary" className="mt-4" onClick={handleClose}>
+              Close Modal
+            </Button>
+          )}
         </Modal.Body>
       </Modal>
     );

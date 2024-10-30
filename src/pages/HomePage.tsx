@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 import LocationCard from '../components/LocationCard.tsx';
 
 const HomePage: React.FC = () => {

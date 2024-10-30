@@ -37,7 +37,7 @@ export function ConnectWallet() {
         null
       )} */}
       {!address ? (
-        <a onClick={handleShow} className="btn btn-success d-flex align-items-center">
+        <a onClick={handleShow} className="btn btn-success d-flex align-items-center ps-3 pe-3">
           {/* <img src={logo_starknet} 
             alt="Logo" 
             style={{ width: "24px", height: "24px", marginRight: "6px" 

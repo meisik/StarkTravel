@@ -179,7 +179,7 @@ const ReviewForm: React.FC = () => {
       {isWalletConnected ? (
         <div>
           <ReviewInputForm
-            username={address ? `0x${address}` : ''}
+            username={address ? `${address}` : ''}
             location={location}
             setLocation={setLocation}
             reviewText={reviewText}

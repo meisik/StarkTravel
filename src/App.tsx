@@ -5,6 +5,7 @@ import Footer from './components/Footer.tsx';
 import { BrowserRouter as Router, Route, Routes, Link, useLocation, BrowserRouter } from 'react-router-dom';
 import { useAccount } from "@starknet-react/core";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './index.css';
 import Page1 from './pages/page1.tsx';
 import Page2 from './pages/page2.tsx';

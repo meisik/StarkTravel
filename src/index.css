@@ -50,13 +50,13 @@ footer {
   width: 100%;
 }
 .card {
-  background-color: #f4f4f6;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f4f4f6 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
 }
 .card-img-top {
-  height: 200px;
-  object-fit: cover;
+  height: 200px !important;
+  object-fit: cover !important;
 }
 .card-body {
   display: flex;
