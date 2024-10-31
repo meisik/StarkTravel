@@ -22,6 +22,30 @@ export const fetchGroupIdByLocation = async (locationName: string): Promise<stri
   }
 };
 
+export const fetchAverageRatingForGroup = async (groupId: string): Promise<number | null> => {
+  try {
+    const reviewFiles = await fetchLocationReviews(groupId);
+    if (!reviewFiles.length) return null;
+
+    const ratings = await Promise.all(
+      reviewFiles.map(async (file: any) => {
+        const response = await fetch(`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${file.ipfs_pin_hash}`);
+        const data = await response.json();
+        return data.rating;
+      })
+    );
+
+    const validRatings = ratings.filter((rating) => rating != null) as number[];
+    const averageRating = validRatings.reduce((sum, rating) => sum + rating, 0) / validRatings.length;
+    // console.log(`Average rating for group ${groupId}: ${averageRating}`);
+    return averageRating;
+  } catch (error) {
+    console.error("Error while average rating:", error);
+    return null;
+  }
+};
+
+
 export const fetchLocationReviews = async (groupId: string) => {
   const response = await fetch(`https://api.pinata.cloud/data/pinList?groupId=${groupId}&status=pinned`, {
     method: 'GET',

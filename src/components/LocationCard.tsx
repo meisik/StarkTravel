@@ -5,22 +5,25 @@ interface LocationCardProps {
   image: string;
   title: string;
   category: string;
-  rating: number;
+  rating: number | null;
   link: string;
+  isLoading: boolean;
 }
 
-const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rating, link }) => {
-
-  // Создаем массив из рейтинга, чтобы отобразить звезды
+const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rating, link, isLoading }) => {
   const renderRating = () => {
     const stars: JSX.Element[] = [];
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = rating && rating % 1 !== 0;
+
     for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <i
-          key={i}
-          className={`bi ${i <= rating ? 'bi-star-fill' : 'bi-star'} me-1`}
-        />
-      );
+      if (i <= fullStars) {
+        stars.push(<i key={i} className="bi bi-star-fill me-1" />);
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        stars.push(<i key={i} className="bi bi-star-half me-1" />);
+      } else {
+        stars.push(<i key={i} className="bi bi-star me-1" />);
+      }
     }
     return stars;
   };
@@ -32,11 +35,17 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rat
         <div className="card-body">
           <div className="card-title-rating">
             <h5 className="card-title">{title}</h5>
-            <div className="rating">{renderRating()}</div>
+            <div className="rating">
+              {isLoading ? (
+                <div className="skeleton skeleton-stars"></div>
+              ) : (
+                renderRating()
+              )}
+            </div>
           </div>
           <p className="card-text">Category: {category}</p>
           <Link to={link} className="btn btn-custom mt-auto">
-            View Reviews
+            View Location
           </Link>
         </div>
       </div>

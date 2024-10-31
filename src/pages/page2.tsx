@@ -1,17 +1,114 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAccount } from "@starknet-react/core";
-import ReviewInputForm from '../components/ReviewInputForm.tsx';
 import ReviewForm from '../components/ReviewForm.tsx';
 import WalletBar from '../components/WalletBar.tsx';
+import ReviewCard from '../components/ReviewCard.tsx';
+import { fetchLocationReviews, fetchGroupIdByLocation } from '../services/pinataService.ts';
+import { Fancybox } from '@fancyapps/ui';
+import '@fancyapps/ui/dist/fancybox/fancybox.css';
+import RatingStars from '../components/RatingStars.tsx';
+
+interface Review {
+  author: string;
+  timestamp: string;
+  reviewText: string;
+  rating: number;
+  photos?: string[];
+}
 
 const Page1: React.FC = () => {
 
   const { isConnected, address } = useAccount();
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [groupId, setGroupId] = useState<string | null>(null);
+  const [locationName, setLocationName] = useState<string | null>(null);
+  const [reviewFilesCount, setReviewFilesCount] = useState<number>(0);
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState<number>(2);
+  const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(true);
+  const [averageRating, setAverageRating] = useState<number | null>(null);
+  const [isLoadingRating, setIsLoadingRating] = useState<boolean>(true);
+
+  useEffect(() => {
+    const locationElement = document.querySelector('h1');
+    if (locationElement) {
+      setLocationName(locationElement.innerText);
+      // console.log("Location name:", locationElement.innerText);
+    } else {
+      console.warn("<h1> not found");
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadGroupId = async () => {
+      if (!locationName) return;
+
+      // console.log(`Call fetchGroupIdByLocation for location "${locationName}"`);
+      try {
+        const id = await fetchGroupIdByLocation(locationName);
+        setGroupId(id);
+        // console.log(`Group ID for location "${locationName}":`, id);
+      } catch (error) {
+        console.error("Error with Group ID:", error);
+      }
+    };
+
+    loadGroupId();
+  }, [locationName]);
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      if (!groupId) return;
+
+      setIsLoadingReviews(true);
+
+      try {
+        // console.log(`Upload review for groupId: ${groupId}`);
+        const reviewFiles = await fetchLocationReviews(groupId);
+        // console.log("Reviews files from IPFS:", reviewFiles);
+        setReviewFilesCount(reviewFiles.length);
+
+        const reviewData = await Promise.all(
+          reviewFiles.map(async (file: any) => {
+            // console.log(`Load review data from IPFS hash: ${file.ipfs_pin_hash}`);
+            const response = await fetch(`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${file.ipfs_pin_hash}`);
+            
+            if (!response.ok) {
+              console.error(`Error review file from IPFS: ${file.ipfs_pin_hash}`);
+              return null;
+            }
+
+            const data = await response.json();
+            // console.log("Review data:", data);
+            return data;
+          })
+        );
+
+        const validReviews = reviewData.filter((review) => review !== null);
+        setReviews(validReviews);
+
+        // Calculate average rating
+        const totalRating = validReviews.reduce((sum, review) => sum + review.rating, 0);
+        const avgRating = totalRating / validReviews.length;
+        setAverageRating(Number(avgRating.toFixed(1))); // Set rounded average rating
+
+        // console.log("Reviews:", validReviews);
+      } catch (error) {
+        console.error("Ошибка загрузки отзывов:", error);
+      } finally {
+        setIsLoadingReviews(false);
+        setIsLoadingRating(false);
+      }
+    };
+
+    loadReviews();
+  }, [groupId]);
+
+  const handleLoadMore = () => setVisibleReviewsCount((prev) => prev + 2);
 
   return (
-   <>
-    <div className="container my-4">
-        <div className="location-header">
+    <>
+      <div className="container my-4">
+        <header className="location-header">
             <div id="carouselExampleControls" className="carousel slide" data-bs-ride="carousel">
                 <div className="carousel-inner">
                     <div className="carousel-item active">
@@ -31,15 +128,17 @@ const Page1: React.FC = () => {
                 </button>
             </div>
             <h1 className="mt-3">City Hotel</h1>
-            <div className="rating">
-                <i className="bi bi-star-fill me-1"></i>
-                <i className="bi bi-star-fill me-1"></i>
-                <i className="bi bi-star-fill me-1"></i>
-                <i className="bi bi-star-fill me-1"></i>
-                <i className="bi bi-star-half me-1"></i>
-                <span className='ms-1'>(181)</span>
-            </div>
-            <p className="mt-3">This beautiful beach resort offers luxury accommodations and top-notch amenities, perfect for a relaxing getaway. Located in a picturesque setting, it is ideal for both solo travelers and families.</p>
+            {isLoadingRating ? (
+              <div className="skeleton mx-auto" style={{ width: '300px', height: '24px' }}></div>
+            ) : (
+              <div className="rating">
+                <RatingStars averageRating={averageRating} reviewFilesCount={reviewFilesCount} />
+              </div>
+            )}
+            
+            <p className="mt-3">
+                Welcome to the epitome of luxury and comfort, where nature meets sophistication, and every detail is thoughtfully curated to create an unforgettable experience. Nestled in an exclusive location, this hotel is an oasis of tranquility, offering guests a private sanctuary surrounded by breathtaking landscapes. From the moment you arrive, the ambiance of elegance and warmth welcomes you, promising a stay that rejuvenates and inspires.
+            </p>
 
             <div className="pros-cons mt-4">
                 <div className="pros">
@@ -61,57 +160,57 @@ const Page1: React.FC = () => {
                     </ul>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <h2 className="mt-5">Leave a Review</h2>
-
-        {isConnected ? (
+        <section className='review-section'>
+          <h2 className="mt-5">Leave a review</h2>
+          
+          {isConnected ? (
             <ReviewForm />
-        )
-        : (
-          <>
-            <div className="alert alert-danger" role="alert">
-              If you want to write a review you need connect Starknet wallet first.
-            </div>
-            <WalletBar />
-          </>
-        )}
+            )
+            : (
+              <>
+                <div className="alert alert-danger" role="alert">
+                  If you want to write a review you need connect Starknet wallet first.
+                </div>
+                <WalletBar />
+              </>
+            )
+          }
 
-        <h2 className="mt-5">Reviews</h2>
-        <p className="review-count">Showing 2 of 5 reviews</p>
-        <div className="review-list mt-4">
-            <div className="card mb-3">
-                <div className="card-body">
-                    <h5 className="card-title">0x1234...5678</h5>
-                    <div className="rating">
-                        <i className="bi bi-star-fill"></i>
-                        <i className="bi bi-star-fill"></i>
-                        <i className="bi bi-star-fill"></i>
-                        <i className="bi bi-star"></i>
-                        <i className="bi bi-star"></i>
-                    </div>
-                    <p className="reviews-date">Reviewed on 2024-10-23</p>
-                    <p className="card-text mt-2">Great place to stay! The view was amazing, and the staff was incredibly friendly. I especially loved the private beach access and the variety of activities they offer. However, the food at the on-site restaurant could have been better. Overall, I had a wonderful experience!</p>
-                </div>
+          <h2 className="mt-5">{locationName} reviews</h2>
+          
+          {isLoadingReviews ? (
+            <div className="text-center mt-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
             </div>
-            <div className="card mb-3">
-                <div className="card-body">
-                    <h5 className="card-title">0xabcd...ef12</h5>
-                    <div className="rating">
-                        <i className="bi bi-star-fill"></i>
-                        <i className="bi bi-star-fill"></i>
-                        <i className="bi bi-star-half"></i>
-                        <i className="bi bi-star"></i>
-                        <i className="bi bi-star"></i>
+            ) : (
+              <>
+                <p className="review-count">Showing {Math.min(visibleReviewsCount, reviewFilesCount)} of {reviewFilesCount} reviews</p>              
+                <div className="review-list mt-4">
+                  {reviews.slice(0, visibleReviewsCount).map((review, index) => (
+                    <ReviewCard key={index} {...review} fancyboxId={`gallery-${index}`}/>
+                  ))}
+                
+                  {visibleReviewsCount < reviews.length && (
+                    <div className="text-center mt-4">
+                      <button className="btn btn-custom ps-3 pe-3" onClick={handleLoadMore}>
+                        <i className="bi bi-plus-circle-fill me-2"></i> Load more
+                      </button>
                     </div>
-                    <p className="reviews-date">Reviewed on 2024-10-20</p>
-                    <p className="card-text mt-2">Beautiful resort with stunning views, but the prices were a bit high for the overall quality. The staff was friendly, but there were some delays in service. I'd recommend it for the views and amenities, but be prepared for some hiccups during peak season.</p>
+                  )}
                 </div>
-            </div>
-        </div>
+              </>
+            )
+          }
+        </section>
       </div>
-   </>
+    </>
   );
 };
+
+Fancybox.bind('[data-fancybox]', {});
 
 export default Page1;
