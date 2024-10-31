@@ -1,5 +1,68 @@
 const jwt = process.env.REACT_APP_PINATA_JWT;
 
+export const fetchGroupIdByLocation = async (locationName: string): Promise<string | null> => {
+  try {
+    const response = await fetch("https://api.pinata.cloud/groups", {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+
+    const data = await response.json();
+    // console.log("Resulting groups:", data);
+
+    const group = data.find((group: any) => group.name === locationName);
+    // console.log(`Search result for "${locationName}":`, group);
+
+    return group ? group.id : null;
+  } catch (error) {
+    console.error("Error when querying groups from Pinata:", error);
+    return null;
+  }
+};
+
+export const fetchAverageRatingForGroup = async (groupId: string): Promise<number | null> => {
+  try {
+    const reviewFiles = await fetchLocationReviews(groupId);
+    if (!reviewFiles.length) return null;
+
+    const ratings = await Promise.all(
+      reviewFiles.map(async (file: any) => {
+        const response = await fetch(`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${file.ipfs_pin_hash}`);
+        const data = await response.json();
+        return data.rating;
+      })
+    );
+
+    const validRatings = ratings.filter((rating) => rating != null) as number[];
+    const averageRating = validRatings.reduce((sum, rating) => sum + rating, 0) / validRatings.length;
+    // console.log(`Average rating for group ${groupId}: ${averageRating}`);
+    return averageRating;
+  } catch (error) {
+    console.error("Error while average rating:", error);
+    return null;
+  }
+};
+
+
+export const fetchLocationReviews = async (groupId: string) => {
+  const response = await fetch(`https://api.pinata.cloud/data/pinList?groupId=${groupId}&status=pinned`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+
+  const data = await response.json();
+  // console.log("All files for the group:", data);
+
+  const reviewFiles = data.rows.filter((file: any) => file.mime_type === "application/json");
+  // console.log("Feedback files with MIME type application/json:", reviewFiles);
+  
+  return reviewFiles;
+};
+
 // Group availability check
 export const checkGroupExists = async (location: string) => {
   const response = await fetch("https://api.pinata.cloud/groups", {
@@ -61,7 +124,7 @@ export const checkUserExistsInGroup = async (username: string, groupId: string) 
     if (data && data.rows && Array.isArray(data.rows)) {
       for (const file of data.rows) {
         if (file.mime_type === 'application/json') {
-          const fileResponse = await fetch(`https://gateway.pinata.cloud/ipfs/${file.ipfs_pin_hash}`);
+          const fileResponse = await fetch(`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${file.ipfs_pin_hash}`);
           const fileData = await fileResponse.json();
           if (fileData.author === username) {
             // console.log(`User ${username} found in group ${groupId}`);

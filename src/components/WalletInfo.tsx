@@ -21,8 +21,8 @@ export function WalletInfo() {
         //         </button>
         //     </p>
         // </div>
-        <button onClick={() => disconnect()} className="btn btn-danger">
-            <i className="bi bi-x-circle-fill me-1"></i> Disconnect {formatAddress(address)}
+        <button onClick={() => disconnect()} className="btn btn-danger ps-3 pe-3">
+            <i className="bi bi-x-circle-fill me-2"></i> Disconnect {formatAddress(address)}
         </button>
     )
 }

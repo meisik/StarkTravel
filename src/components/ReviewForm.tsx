@@ -13,6 +13,7 @@ import {
   fetchAllGroups,
 } from '../services/pinataService.ts';
 import ReviewInputForm from './ReviewInputForm.tsx';
+import StarRating from './StarRating.tsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const jwt = process.env.REACT_APP_PINATA_JWT;
@@ -26,6 +27,7 @@ const ReviewForm: React.FC = () => {
   const [location, setLocation] = useState<string>('');
   const [reviewText, setReviewText] = useState<string>('');
   const [photos, setPhotos] = useState<FileList | null>(null);
+  const [rating, setRating] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
@@ -49,6 +51,7 @@ const ReviewForm: React.FC = () => {
     // setLocation('');
     setReviewText('');
     setPhotos(null);
+    setRating(0);
     const fileInput = document.getElementById('photos') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -110,14 +113,16 @@ const ReviewForm: React.FC = () => {
           Message: [
             { name: 'user', type: 'felt' },
             { name: 'location', type: 'felt' },
-            { name: 'review', type: 'felt*' } // Обозначаем `review` как массив `felt`
+            { name: 'rating', type: 'felt' },
+            { name: 'review', type: 'felt*' },
           ],
         },
         primaryType: 'Message',
         message: {
           user: address || '',
           location: location,
-          review: reviewAsFeltArray // Передаем массив `felt` для отзыва
+          rating: rating,
+          review: reviewAsFeltArray
         },
       };
 
@@ -128,7 +133,7 @@ const ReviewForm: React.FC = () => {
           setModalMessage('Loading data into IPFS storage...');
 
           const timestamp = new Date().toISOString();
-          const reviewData = { author: address, location, reviewText, timestamp, photos: [] as string[] };
+          const reviewData = { author: address, location, reviewText, timestamp, rating, photos: [] as string[] };
 
           if (photos) {
             const uploadPromises = Array.from(photos).map((photo) => uploadCompressedPhoto(photo, `${jwt}`));
@@ -170,7 +175,7 @@ const ReviewForm: React.FC = () => {
   const handleModalClose = () => {
     setShowModal(false);
     if (isUploadSuccessful) {
-      resetForm(); // Сбрасываем форму только при успешной загрузке
+      resetForm();
     }
   };
 
@@ -179,16 +184,17 @@ const ReviewForm: React.FC = () => {
       {isWalletConnected ? (
         <div>
           <ReviewInputForm
-            username={address ? `0x${address}` : ''}
+            username={address ? `${address}` : ''}
             location={location}
             setLocation={setLocation}
             reviewText={reviewText}
-            setReviewText={setReviewText}
+            setReviewText={setReviewText} 
             photos={photos}
             setPhotos={setPhotos}
             handleSubmit={handleFormSubmit}
             isWalletConnected={isWalletConnected}
-          />
+            rating={rating}
+            setRating={setRating} />
         </div>
       )
       : (

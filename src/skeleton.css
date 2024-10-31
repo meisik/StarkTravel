@@ -1,0 +1,24 @@
+.skeleton {
+    background: linear-gradient(100deg, #e0e0e0 30%, #f2f2f2 50%, #e0e0e0 70%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite linear;
+    border-radius: 4px;
+    width: 50%;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .skeleton-stars {
+    width: 80px;
+    height: 20px;
+  }
+  
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-fade-out {
+  transition: opacity 0.5s ease;
+  opacity: 0;
+}
+  
