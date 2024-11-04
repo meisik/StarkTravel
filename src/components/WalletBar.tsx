@@ -30,9 +30,6 @@ const WalletBar = () => {
       }
 }, [])
 
-  if (isConnected) {console.log('Wallet connected')}
-  else {console.log('Wallet not connedted')}
-
   return (
     <>
       {isConnected ? (

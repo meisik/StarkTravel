@@ -3,7 +3,6 @@ import Header from './components/Header.tsx';
 import HomePage from './pages/HomePage.tsx';
 import Footer from './components/Footer.tsx';
 import { BrowserRouter as Router, Route, Routes, Link, useLocation, BrowserRouter } from 'react-router-dom';
-import { useAccount } from "@starknet-react/core";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
