@@ -9,7 +9,7 @@ import { mainnet, sepolia } from '@starknet-react/chains';
 import { StarknetConfig, publicProvider } from '@starknet-react/core';
 
 export function StarknetProvider({ children }) {
-  const chains = [sepolia];
+  const chains = [mainnet, sepolia];
   const connectors = [
     new InjectedConnector({ options: { id: "argentX" } }),
     new InjectedConnector({ options: { id: "braavos" } }),
