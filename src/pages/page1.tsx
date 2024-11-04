@@ -19,6 +19,7 @@ interface Review {
 const Page1: React.FC = () => {
 
   const { isConnected, address } = useAccount();
+  const [pageTitle, setPageTitle] = useState("");
   const [reviews, setReviews] = useState<any[]>([]);
   const [groupId, setGroupId] = useState<string | null>(null);
   const [locationName, setLocationName] = useState<string | null>(null);
@@ -27,6 +28,15 @@ const Page1: React.FC = () => {
   const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(true);
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [isLoadingRating, setIsLoadingRating] = useState<boolean>(true);
+
+  // useEffect(() => {
+  //   const heading = document.querySelector("h1");
+  //   if (heading) {
+  //     const headingText = heading.innerText;
+  //     setPageTitle(headingText);
+  //     document.title = headingText;
+  //   }
+  // }, [pageTitle]);
 
   useEffect(() => {
     const locationElement = document.querySelector('h1');

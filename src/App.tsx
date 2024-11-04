@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Header from './components/Header.tsx';
 import HomePage from './pages/HomePage.tsx';
 import Footer from './components/Footer.tsx';
@@ -14,7 +14,6 @@ import Page2 from './pages/page2.tsx';
 import Page3 from './pages/page3.tsx';
 
 const App: React.FC = () => {
-  const { isConnected, address } = useAccount();
   return (
     <main>
       <Header />

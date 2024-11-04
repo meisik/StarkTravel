@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dynamic-labs/starknet": "^3.4.6",
     "@fancyapps/ui": "^5.0.36",
     "@starknet-react/chains": "^3.0.2",
     "@starknet-react/core": "^3.0.3",
@@ -17,6 +18,7 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "compressorjs": "^1.2.1",
+    "get-starknet": "^3.3.3",
     "get-starknet-core": "^4.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
@@ -24,7 +26,10 @@
     "react-image-lightbox": "^5.1.4",
     "react-router-dom": "^6.27.0",
     "react-scripts": "^5.0.1",
+    "starknet": "^6.17.0",
+    "starknetkit": "^2.3.3",
     "typescript": "^5.6.2",
+    "viem": "^2.21.38",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

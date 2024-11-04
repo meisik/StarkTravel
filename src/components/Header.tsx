@@ -1,10 +1,8 @@
 import React from 'react';
 import { useAccount } from "@starknet-react/core";
 import WalletBar from './WalletBar.tsx';
-import WalletInfo from './WalletInfo.tsx';
 import logo_starknet from '../assets/logo_starknet.svg';
 import { Link } from 'react-router-dom';
-// import HomePage from '../pages/HomePage.tsx';
 
 const Header: React.FC = () => {
 
@@ -32,15 +30,7 @@ const Header: React.FC = () => {
                             </li>
                         </ul>
                     </div>
-                    {isConnected ? (
-                        <WalletInfo />
-                    )
-                    : (
-                        <WalletBar />
-                    )}
-                    {/* <button className="btn btn-outline-light d-flex align-items-center" type="button">
-                        <i className="bi bi-wallet me-2"></i> Connect Wallet
-                    </button> */}
+                    <WalletBar />
                 </div>
             </nav>
         </>
