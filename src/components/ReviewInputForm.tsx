@@ -70,8 +70,7 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   return (
     <form className="needs-validation" noValidate onSubmit={handleSubmit}>
       {isWalletConnected && (
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">Check your wallet</label>
+        <div className="form-floating mb-3">
           <input
             type="text"
             className="form-control"
@@ -81,12 +80,11 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
             autoComplete='off'
             disabled
           />
-          <div className="invalid-feedback">Please enter your wallet.</div>
+          <label htmlFor="username">Check your wallet</label>
         </div>
       )}
       
-      <div className="mb-3">
-        <label htmlFor="location" className="form-label">{labelText}</label>
+      <div className="form-floating mb-3">
         <input
           type="text"
           className="form-control"
@@ -97,29 +95,33 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
           required
           autoComplete='off'
         />
-        <div className="invalid-feedback">Please set or choose location.</div>
+        <label htmlFor="location">{labelText}</label>
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="reviewText" className="form-label">Enter review text, minimum 150 characters</label>
+      <div className="form-floating mb-3">
+        {/* <label htmlFor="reviewText" className="form-label">Enter review text, minimum 150 characters<span>*</span></label> */}
         <textarea
           className="form-control"
           id="reviewText"
-          rows={4}
+          // rows={4}
+          style={{height: '200px'}}
           value={reviewText}
           onChange={(e) => setReviewText(e.target.value)}
           required
         />
-        <div className="invalid-feedback">Please enter the text of your feedback.</div>
+        <label htmlFor="reviewText">Enter review text, minimum 150 characters<span>*</span></label>
+        {/* <div className="invalid-feedback">Please enter the text of your feedback.</div> */}
+        <div id="reviewHelp" className="form-text">Don't skimp on the text, everyone loves detailed reviews</div>
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Rate location:</label>
+        <label className="form-label">Rate location<span>*</span></label>
         <StarRating rating={rating} setRating={setRating} />
+        <div id="ratingHelp" className="form-text">Evaluate your journey at this location</div>
       </div>
 
       <div className="mb-3">
-        <label htmlFor="photos" className="form-label">Upload a photo (you can select more than one)</label>
+        <label htmlFor="photos" className="form-label">Upload your photos</label>
         <input
           type="file"
           className="form-control"
@@ -128,10 +130,11 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
           multiple
           onChange={(e) => setPhotos(e.target.files)}
         />
+        <div id="photosHelp" className="form-text">Multiple uploads are available. Supports jpg/png only</div>
       </div>
 
       <div className="d-grid gap-2">
-        <button type="submit" className="btn btn-custom" disabled={!username || !location || (reviewText.length<149)}>Send Feedback</button>
+        <button type="submit" className="btn btn-custom" disabled={!username || !location || (reviewText.length<149) || rating === 0}>Send Feedback</button>
       </div>
     </form>
   );

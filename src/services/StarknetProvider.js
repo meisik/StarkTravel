@@ -13,14 +13,14 @@ export function StarknetProvider({ children }) {
   const connectors = [
     new InjectedConnector({ options: { id: "argentX" } }),
     new InjectedConnector({ options: { id: "braavos" } }),
-    ArgentMobileConnector.init({
-      options: {
-        url: window.location.hostname,
-        dappName: "StarkTravel",
-        chainId: constants.NetworkName.SN_MAIN,
-        // projectId: '1ba6a0870c0326a749cab0f0102c8d7a'
-      },
-    }),
+    // ArgentMobileConnector.init({
+    //   options: {
+    //     url: window.location.hostname,
+    //     dappName: "StarkTravel",
+    //     chainId: constants.NetworkName.SN_MAIN,
+    //     // projectId: '1ba6a0870c0326a749cab0f0102c8d7a'
+    //   },
+    // }),
     new WebWalletConnector({ url: "https://web.argent.xyz" }),
   ]
 

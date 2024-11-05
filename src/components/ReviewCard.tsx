@@ -6,10 +6,11 @@ interface ReviewCardProps {
   reviewText: string;
   rating: number;
   photos?: string[];
-  fancyboxId: string; 
+  fancyboxId: string;
+  isCurrentUser?: boolean;
 }
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ author, timestamp, reviewText, rating, photos, fancyboxId }) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ author, timestamp, reviewText, rating, photos, fancyboxId, isCurrentUser }) => {
   const formatDate = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -20,7 +21,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ author, timestamp, reviewText, 
   return (
     <div className="card mb-3">
       <div className="card-body">
-        <h5 className="card-title">{author ? formatAddress(author) : "Anonymous"}</h5>
+        <h5 className="card-title">
+          {isCurrentUser && <span className="me-2 badge bg-success">My Review</span>}
+          {author ? formatAddress(author) : "Anonymous"}
+        </h5>
         <div className="rating mb-2">
           {[...Array(5)].map((_, i) => (
             <i key={i} className={`bi ${i < rating ? "bi-star-fill me-1" : "bi-star me-1"}`}></i>

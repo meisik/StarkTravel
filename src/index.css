@@ -122,3 +122,13 @@ footer {
 .success-photo:last-child {margin-bottom: 0}
 a.mb-2:last-child {margin-bottom: 0 !important}
 h3.lead {line-height: 1.5}
+.form-label span,
+.form-floating label span {
+  margin-left: 4px;
+  color: red !important
+}
+
+.select-wallet .card {
+  border: 1px dashed rgba(26, 26, 64, 1) !important;
+  background-color: #fff !important;
+}

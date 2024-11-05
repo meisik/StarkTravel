@@ -27,6 +27,7 @@ const Page1: React.FC = () => {
   const [isLoadingReviews, setIsLoadingReviews] = useState<boolean>(true);
   const [averageRating, setAverageRating] = useState<number | null>(null);
   const [isLoadingRating, setIsLoadingRating] = useState<boolean>(true);
+  const [userHasReview, setUserHasReview] = useState<boolean>(false);
 
   useEffect(() => {
     const locationElement = document.querySelector('h1');
@@ -83,7 +84,17 @@ const Page1: React.FC = () => {
           })
         );
 
-        const validReviews = reviewData.filter((review) => review !== null);
+        const validReviews = reviewData.filter((review) => review !== null) as Review[];
+        // Check if current user has already left a review
+        const userReviewIndex = validReviews.findIndex(review => review.author === address);
+        if (userReviewIndex !== -1) {
+          const [userReview] = validReviews.splice(userReviewIndex, 1);
+          validReviews.unshift(userReview);
+          setUserHasReview(true);
+        } else {
+          setUserHasReview(false);
+        }
+
         setReviews(validReviews);
 
         // Calculate average rating
@@ -93,7 +104,7 @@ const Page1: React.FC = () => {
 
         // console.log("Reviews:", validReviews);
       } catch (error) {
-        console.error("Ошибка загрузки отзывов:", error);
+        console.error("Error loading reviews:", error);
       } finally {
         setIsLoadingReviews(false);
         setIsLoadingRating(false);
@@ -101,7 +112,7 @@ const Page1: React.FC = () => {
     };
 
     loadReviews();
-  }, [groupId]);
+  }, [groupId, address]);
 
   const handleLoadMore = () => setVisibleReviewsCount((prev) => prev + 2);
 
@@ -163,12 +174,20 @@ const Page1: React.FC = () => {
         </header>
 
         <section className='review-section'>
-          <h2 className="mt-5">Leave a review</h2>
+          <h2 className="mt-5 mb-4">Leave a review</h2>
           
           {isConnected ? (
-            <ReviewForm />
+            !userHasReview ? (
+              <ReviewForm />
+            ) : (
+              <div className="alert alert-success" role="alert">
+                <h4 className="alert-heading">You're awesome!</h4>
+                <p>You have already left a review for this location, you can view it just below.</p>
+                <hr />
+                <p className="mb-0">We're sure there are more incredible places near you to write a review on as well.</p>
+              </div>
             )
-            : (
+            ) : (
               <>
                 <div className="alert alert-danger" role="alert">
                   If you want to write a review you need connect Starknet wallet first.
@@ -190,8 +209,10 @@ const Page1: React.FC = () => {
               <>
                 <p className="review-count">Showing {Math.min(visibleReviewsCount, reviewFilesCount)} of {reviewFilesCount} reviews</p>              
                 <div className="review-list mt-4">
-                  {reviews.slice(0, visibleReviewsCount).map((review, index) => (
-                    <ReviewCard key={index} {...review} fancyboxId={`gallery-${index}`}/>
+                {reviews.slice(0, visibleReviewsCount).map((review, index) => (
+                    <div key={index} className={review.author === address ? 'select-wallet' : ''}>
+                      <ReviewCard {...review} fancyboxId={`gallery-${index}`} isCurrentUser={review.author === address} />
+                    </div>
                   ))}
                 
                   {visibleReviewsCount < reviews.length && (

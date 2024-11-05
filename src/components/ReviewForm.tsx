@@ -81,17 +81,17 @@ const ReviewForm: React.FC = () => {
         return;
       }
 
-      // Функция для конвертации строки в массив `felt`
+      // Function for converting a string into a `felt` array
       function stringToFeltArray(text: string): number[] {
-        const feltArray: number[] = []; // Явное указание типа массива как `number[]`
+        const feltArray: number[] = []; // Explicitly specifying the array type as `number[]`
         for (let i = 0; i < text.length; i++) {
-          // Получаем ASCII код каждого символа и добавляем его в массив
+          // Get the ASCII code of each character and add it to the array
           feltArray.push(text.charCodeAt(i));
         }
         return feltArray;
       }
 
-      // Функция для восстановления строки из массива `felt`
+      // Function to recover a string from the `felt array`
       function feltArrayToString(feltArray: number[]): string {
         return feltArray.map((felt) => String.fromCharCode(felt)).join('');
       }
@@ -182,7 +182,7 @@ const ReviewForm: React.FC = () => {
   return (
     <div>
       {isWalletConnected ? (
-        <div>
+        <>
           <ReviewInputForm
             username={address ? `${address}` : ''}
             location={location}
@@ -195,7 +195,7 @@ const ReviewForm: React.FC = () => {
             isWalletConnected={isWalletConnected}
             rating={rating}
             setRating={setRating} />
-        </div>
+        </>
       )
       : (
         <WalletBar />
@@ -206,7 +206,7 @@ const ReviewForm: React.FC = () => {
         loading={loading}
         modalMessage={modalMessage}
         photoLinks={photoLinks}
-        handleClose={handleModalClose} // handleClose передаётся только в StatusModal
+        handleClose={handleModalClose} // handleClose is passed only to StatusModal
       />
     </div>
   );
