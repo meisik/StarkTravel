@@ -19,7 +19,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ author, timestamp, reviewText, 
   const formatAddress = (address: string) => `${address.substring(0, 5)}...${address.substring(address.length - 5)}`;
 
   return (
-    <div className="card mb-3">
+    <div className={`card mb-3 ${isCurrentUser ? 'bg-light border-success' : ''}`}>
       <div className="card-body">
         <h5 className="card-title">
           {isCurrentUser && <span className="me-2 badge bg-success">My Review</span>}
