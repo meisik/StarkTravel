@@ -12,9 +12,9 @@ interface StatusModalProps {
 const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMessage, photoLinks, handleClose }) => {
   
   // Reload Page 
-  // const handleReload = () => {
-    //   window.location.reload();
-    // };
+  const handleReload = () => {
+      window.location.reload();
+    };
   
     return (
       <Modal show={showModal} onHide={handleClose} backdrop="static" centered>
@@ -31,7 +31,7 @@ const StatusModal: React.FC<StatusModalProps> = ({ showModal, loading, modalMess
             </div>
           )}
           {!loading && modalMessage !== "Data validation is performed" && (
-            <Button variant="primary" className="mt-4" onClick={handleClose}>
+            <Button variant="primary" className="mt-4" onClick={handleReload}>
               Close Modal
             </Button>
           )}

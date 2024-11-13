@@ -68,72 +68,79 @@ const ReviewInputForm: React.FC<ReviewInputFormProps> = ({
   };
 
   return (
-    <form className="needs-validation" noValidate onSubmit={handleSubmit}>
-      {isWalletConnected && (
-        <div className="mb-3">
-          <label htmlFor="username" className="form-label">Check your wallet</label>
+    <>
+      <h2>Leave a review</h2>
+      <p className='text-secondary'>Please fill in all fields marked with<span>*</span></p>
+      <form className="needs-validation mt-4" noValidate onSubmit={handleSubmit}>
+        {isWalletConnected && (
+          <div className="form-floating mb-3">
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              value={username}
+              required
+              autoComplete='off'
+              disabled
+            />
+            <label htmlFor="username">Check your wallet<span>*</span></label>
+          </div>
+        )}
+        
+        <div className="form-floating mb-3">
           <input
             type="text"
             className="form-control"
-            id="username"
-            value={username}
+            id="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            disabled={isLocationDisabled}
             required
             autoComplete='off'
-            disabled
           />
-          <div className="invalid-feedback">Please enter your wallet.</div>
+          <label htmlFor="location">{labelText}<span>*</span></label>
         </div>
-      )}
-      
-      <div className="mb-3">
-        <label htmlFor="location" className="form-label">{labelText}</label>
-        <input
-          type="text"
-          className="form-control"
-          id="location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          disabled={isLocationDisabled}
-          required
-          autoComplete='off'
-        />
-        <div className="invalid-feedback">Please set or choose location.</div>
-      </div>
 
-      <div className="mb-3">
-        <label htmlFor="reviewText" className="form-label">Enter review text, minimum 150 characters</label>
-        <textarea
-          className="form-control"
-          id="reviewText"
-          rows={4}
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-          required
-        />
-        <div className="invalid-feedback">Please enter the text of your feedback.</div>
-      </div>
+        <div className="form-floating mb-3">
+          {/* <label htmlFor="reviewText" className="form-label">Enter review text, minimum 150 characters<span>*</span></label> */}
+          <textarea
+            className="form-control"
+            id="reviewText"
+            // rows={4}
+            style={{height: '200px'}}
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            required
+          />
+          <label htmlFor="reviewText">Enter review text, minimum 150 characters<span>*</span></label>
+          {/* <div className="invalid-feedback">Please enter the text of your feedback.</div> */}
+          <div id="reviewHelp" className="form-text">Don't skimp on the text, everyone loves detailed reviews</div>
+        </div>
 
-      <div className="mb-3">
-        <label className="form-label">Rate location:</label>
-        <StarRating rating={rating} setRating={setRating} />
-      </div>
+        <div className="mb-3">
+          <label className="form-label">Rate location<span>*</span></label>
+          <StarRating rating={rating} setRating={setRating} />
+          <div id="ratingHelp" className="form-text">Evaluate your journey at this location</div>
+        </div>
 
-      <div className="mb-3">
-        <label htmlFor="photos" className="form-label">Upload a photo (you can select more than one)</label>
-        <input
-          type="file"
-          className="form-control"
-          id="photos"
-          accept="image/*"
-          multiple
-          onChange={(e) => setPhotos(e.target.files)}
-        />
-      </div>
+        <div className="mb-3">
+          <label htmlFor="photos" className="form-label">Upload your photos</label>
+          <input
+            type="file"
+            className="form-control"
+            id="photos"
+            accept="image/*"
+            multiple
+            onChange={(e) => setPhotos(e.target.files)}
+          />
+          <div id="photosHelp" className="form-text">Multiple uploads are available. Supports jpg/png only</div>
+        </div>
 
-      <div className="d-grid gap-2">
-        <button type="submit" className="btn btn-custom" disabled={!username || !location || (reviewText.length<149)}>Send Feedback</button>
-      </div>
-    </form>
+        <div className="d-grid gap-2">
+          <button type="submit" className="btn btn-custom" disabled={!username || !location || (reviewText.length<149) || rating === 0}>Send Feedback</button>
+        </div>
+      </form>
+    </>
   );
 };
 

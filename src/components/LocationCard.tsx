@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 interface LocationCardProps {
   image: string;
   title: string;
+  originalTitle: string;
   category: string;
   rating: number | null;
   link: string;
   isLoading: boolean;
 }
 
-const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rating, link, isLoading }) => {
+const LocationCard: React.FC<LocationCardProps> = ({ image, title, originalTitle, category, rating, link, isLoading }) => {
   const renderRating = () => {
     const stars: JSX.Element[] = [];
     const fullStars = Math.floor(rating || 0);
@@ -33,8 +34,9 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rat
       <div className="card h-100">
         <img src={image} className="card-img-top" alt={title} />
         <div className="card-body">
-          <div className="card-title-rating">
-            <h5 className="card-title">{title}</h5>
+          <h5 className="card-title">{title}</h5>
+          <div className="card-title-rating mb-3">
+            <div className="card-text">Category: {category}</div>
             <div className="rating">
               {isLoading ? (
                 <div className="skeleton skeleton-stars"></div>
@@ -43,8 +45,7 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, category, rat
               )}
             </div>
           </div>
-          <p className="card-text">Category: {category}</p>
-          <Link to={link} className="btn btn-custom mt-auto">
+          <Link to={link} className="btn btn-custom mt-auto" state={{ originalTitle }}>
             View Location
           </Link>
         </div>

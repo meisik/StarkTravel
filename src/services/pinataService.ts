@@ -47,6 +47,32 @@ export const fetchAverageRatingForGroup = async (groupId: string): Promise<numbe
 
 
 export const fetchLocationReviews = async (groupId: string) => {
+  try {
+    const response = await fetch(`https://api.pinata.cloud/data/pinList?groupId=${groupId}&status=pinned&pageLimit=1000`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    });
+
+    const data = await response.json();
+    // console.log("All files for the group:", data);
+    
+    const reviewFiles = data.rows.filter((file: any) => 
+      file.mime_type === "application/json" && file.metadata.name.startsWith('0x')
+    );
+
+    // console.log("Filtered review files (starting with '0x'):", reviewFiles);
+    // console.log("Count of filtered review files:", reviewFiles.length);
+
+    return reviewFiles;
+  } catch (error) {
+    console.error("Error fetching location reviews:", error);
+    return [];
+  }
+};
+
+export const fetchLocationInfo = async (groupId: string) => {
   const response = await fetch(`https://api.pinata.cloud/data/pinList?groupId=${groupId}&status=pinned`, {
     method: 'GET',
     headers: {
@@ -55,12 +81,18 @@ export const fetchLocationReviews = async (groupId: string) => {
   });
 
   const data = await response.json();
-  // console.log("All files for the group:", data);
 
-  const reviewFiles = data.rows.filter((file: any) => file.mime_type === "application/json");
-  // console.log("Feedback files with MIME type application/json:", reviewFiles);
-  
-  return reviewFiles;
+  const infoFile = data.rows.find((file: any) => file.metadata.name === 'info.json');
+
+  if (infoFile) {
+    const fileResponse = await fetch(`https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/${infoFile.ipfs_pin_hash}`);
+    if (fileResponse.ok) {
+      return await fileResponse.json();
+    } else {
+      throw new Error('Error fetching info.json content');
+    }
+  }
+  return null;
 };
 
 // Group availability check
@@ -190,4 +222,3 @@ export const fetchAllGroups = async () => {
     return [];
   }
 };
-

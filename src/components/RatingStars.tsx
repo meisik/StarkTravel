@@ -19,7 +19,7 @@ const RatingStars: React.FC<{ averageRating: number | null, reviewFilesCount: nu
         {stars}
         <span className="ms-2">
             <strong>
-                {reviewFilesCount && reviewFilesCount > 0 ? `(${averageRating ?? 'N/A'} of 5, ${reviewFilesCount} reviews)` : '(0 reviews)'}
+                {reviewFilesCount && reviewFilesCount > 0 ? `(${averageRating ?? 'N/A'}/5, ${reviewFilesCount} reviews)` : '(0 reviews)'}
             </strong>
         </span>
       </div>
