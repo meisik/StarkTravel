@@ -6,9 +6,12 @@ const HomePage: React.FC = () => {
     const [isLoadingRating, setIsLoadingRating] = useState<{ [key: string]: boolean }>({});
     const [locationRatings, setLocationRatings] = useState<{ [key: string]: number | null }>({});
     const locations = [
-        { title: "Luxury Beach Resort", image: "https://images.unsplash.com/photo-1556761175-4b46a572b786", category: "Resort" },
-        { title: "City Hotel", image: "https://static.tildacdn.com/tild3161-3135-4333-b737-333965646366/ovbmc-exterior-0019-.jpg", category: "Hotel" },
-        { title: "Mountain Retreat", image: "https://images.unsplash.com/photo-1566073771259-6a8506099945", category: "Retreat" },
+        { title: "Hotel Dolphin Grand", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/QmZY6vbz5gCp1rPcTPPZC1fBAV1BsPSek47FdivT7o4uAH", category: "Hotel" },
+        { title: "Haveli Hauz Khas", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/QmVrSaUNCznT5ZpQkqZutAf26s1EkWfpCznV2AyKTDG3GG", category: "Hotel" },
+        { title: "Grand Continent Anjuna a Sarovar Portico Hotel", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/Qmd2877yRpJBX2b7c4tUKHkpHEezUJ8WcCPL4avfApJNmV", category: "Hotel" },
+        { title: "The Astor All Suites Hotel Candolim Goa", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/QmZq9CbKV32SgJF1d3onTDYiXBw4hPe7TNbKmpo5m4koAh", category: "Hotel" },
+        { title: "The Oberoi New Delhi", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/QmejcMKxB78KPRCjK5xT7FjaXLHXMmMmA2L9RVLy4PjbnS", category: "Hotel" },
+        { title: "Chandys Windy Woods", image: "https://peach-convincing-gerbil-650.mypinata.cloud/ipfs/QmQmLiwfCentU67LU6Dp9N5MhFBAz6wFTCTQW2zYWvwjaS", category: "Hotel" },
     ];
 
     useEffect(() => {
@@ -27,6 +30,10 @@ const HomePage: React.FC = () => {
             }
         });
     }, []);
+
+    useEffect(() => {
+        document.title = "StarkTravel - Explore Locations";
+      });
 
     return (
         <div className="container my-4">

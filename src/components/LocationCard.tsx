@@ -34,8 +34,9 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, originalTitle
       <div className="card h-100">
         <img src={image} className="card-img-top" alt={title} />
         <div className="card-body">
-          <div className="card-title-rating">
-            <h5 className="card-title">{title}</h5>
+          <h5 className="card-title">{title}</h5>
+          <div className="card-title-rating mb-3">
+            <div className="card-text">Category: {category}</div>
             <div className="rating">
               {isLoading ? (
                 <div className="skeleton skeleton-stars"></div>
@@ -44,7 +45,6 @@ const LocationCard: React.FC<LocationCardProps> = ({ image, title, originalTitle
               )}
             </div>
           </div>
-          <p className="card-text">Category: {category}</p>
           <Link to={link} className="btn btn-custom mt-auto" state={{ originalTitle }}>
             View Location
           </Link>

@@ -18,13 +18,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const jwt = process.env.REACT_APP_PINATA_JWT;
 
-const ReviewForm: React.FC = () => {
+interface ReviewFormProps {
+  locationName: string;
+}
+
+const ReviewForm: React.FC<ReviewFormProps> = ({ locationName }) => {
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { data, isPending, isError, isIdle, isSuccess, signTypedDataAsync } = useSignTypedData({});
   const [signedMessage, setSignedMessage] = useState<string | null>(null);
   const isWalletConnected = !!address;
-  const [location, setLocation] = useState<string>('');
+  const [location, setLocation] = useState<string>(locationName);
   const [reviewText, setReviewText] = useState<string>('');
   const [photos, setPhotos] = useState<FileList | null>(null);
   const [rating, setRating] = useState<number>(0);
@@ -34,6 +38,10 @@ const ReviewForm: React.FC = () => {
   const [photoLinks, setPhotoLinks] = useState<Array<{ cid: string; name: string }>>([]);
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([]);
   const [isUploadSuccessful, setIsUploadSuccessful] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLocation(locationName);
+  }, [locationName]);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -73,29 +81,38 @@ const ReviewForm: React.FC = () => {
 
       const userExists = await checkUserExistsInGroup(address || '', group.id);
       if (userExists) {
-        setModalMessage(<p className="text-danger mb-0">
-    {`User ${address ? `${address.substring(0, 5)}...${address.substring(address.length - 5)}` : 'Unknown'} 
-    already left a feedback for the ${location} location`}
-  </p>);
+        setModalMessage(
+        <p className="text-danger mb-0">
+          {`User ${address ? `${address.substring(0, 5)}...${address.substring(address.length - 5)}` : 'Unknown'} 
+          already left a feedback for the ${location} location`}
+        </p>);
         setLoading(false);
         return;
       }
 
       // Function for converting a string into a `felt` array
+      // function stringToFeltArray(text: string): number[] {
+      //   const feltArray: number[] = []; // Explicitly specifying the array type as `number[]`
+      //   for (let i = 0; i < text.length; i++) {
+      //     // Get the ASCII code of each character and add it to the array
+      //     feltArray.push(text.charCodeAt(i));
+      //   }
+      //   return feltArray;
+      // }
+
+      // // Function to recover a string from the `felt array`
+      // function feltArrayToString(feltArray: number[]): string {
+      //   return feltArray.map((felt) => String.fromCharCode(felt)).join('');
+      // }
+      // const reviewAsFeltArray = stringToFeltArray(reviewText);
+
+      // Helper function to convert a string to an array of ASCII codes (felt array)
       function stringToFeltArray(text: string): number[] {
-        const feltArray: number[] = []; // Explicitly specifying the array type as `number[]`
-        for (let i = 0; i < text.length; i++) {
-          // Get the ASCII code of each character and add it to the array
-          feltArray.push(text.charCodeAt(i));
-        }
-        return feltArray;
+        return Array.from(text).map((char) => char.charCodeAt(0));
       }
 
-      // Function to recover a string from the `felt array`
-      function feltArrayToString(feltArray: number[]): string {
-        return feltArray.map((felt) => String.fromCharCode(felt)).join('');
-      }
-
+      // Convert location to felt array
+      const locationFeltArray = stringToFeltArray(location);
       const reviewAsFeltArray = stringToFeltArray(reviewText);
 
       const typedData = {
@@ -112,16 +129,16 @@ const ReviewForm: React.FC = () => {
           ],
           Message: [
             { name: 'user', type: 'felt' },
-            { name: 'location', type: 'felt' },
             { name: 'rating', type: 'felt' },
+            { name: 'location', type: 'felt*' },
             { name: 'review', type: 'felt*' },
           ],
         },
         primaryType: 'Message',
         message: {
           user: address || '',
-          location: location,
           rating: rating,
+          location: locationFeltArray,
           review: reviewAsFeltArray
         },
       };

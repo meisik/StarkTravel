@@ -125,6 +125,12 @@ const LocationPage: React.FC = () => {
     loadLocationInfo();
   }, [groupId]);
 
+  useEffect(() => {
+    if (locationInfo?.name) {
+      document.title = locationInfo.name;
+    }
+  }, [locationInfo?.name]);
+
   const handleLoadMore = () => setVisibleReviewsCount((prev) => prev + 2);
 
   return (
@@ -135,7 +141,6 @@ const LocationPage: React.FC = () => {
         ) : (
             <Carousel images={locationInfo?.photos || []} />
         )}
-        {/* <h1 className="mt-3">{location.state?.originalTitle}</h1> */}
         <h1 className="mt-3">
           {isLoadingInfo ? (
             <div className="skeleton mx-auto" style={{ width: '300px', height: '40px' }}></div>
@@ -194,55 +199,64 @@ const LocationPage: React.FC = () => {
 
       </header>
 
-      <section className='review-section'>
-       
-        {isConnected ? (
-            !userHasReview ? (
-              <ReviewForm />
-            ) : (
-              <div className="alert alert-success" role="alert">
-                <h4 className="alert-heading">You're awesome!</h4>
-                <p>You have already left a review for this location, you can view it just below.</p>
-                <hr />
-                <p className="mb-0">We're sure there are more incredible places near you to write a review on as well.</p>
-              </div>
-            )
-            ) : (
-              <>
-                <div className="alert alert-danger" role="alert">
-                  If you want to write a review you need connect Starknet wallet first.
+      {isLoadingInfo ? (
+        <div className="skeleton mx-auto mt-3" style={{ width: '100%', height: '200px' }}></div>
+      ) : (
+        <section className='review-section'>
+            {isConnected ? (
+                !userHasReview ? (
+                <ReviewForm locationName={locationInfo?.name || ''} />
+                ) : (
+                <div className="alert alert-success" role="alert">
+                    <h4 className="alert-heading">You're awesome!</h4>
+                    <p>You have already left a review for this location, you can view it just below.</p>
+                    <hr />
+                    <p className="mb-0">We're sure there are more incredible places near you to write a review on as well.</p>
                 </div>
-                <WalletBar />
-              </>
-            )
-        }
+                )
+                ) : (
+                <>
+                    <div className="alert alert-danger" role="alert">
+                    If you want to write a review you need connect Starknet wallet first.
+                    </div>
+                    <WalletBar />
+                </>
+                )
+            }
 
-        <h2 className="mt-5">{location.state?.originalTitle} reviews</h2>
+            <h2 className="mt-5">{locationInfo?.name} reviews</h2>
 
-        {isLoadingReviews ? (
-          <div className="text-center mt-4">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        ) : (
-          <>
-            <p className="review-count">Showing {Math.min(visibleReviewsCount, reviewFilesCount)} of {reviewFilesCount} reviews</p>
-            <div className="review-list mt-4">
-              {reviews.slice(0, visibleReviewsCount).map((review, index) => (
-                <ReviewCard key={index} {...review} fancyboxId={`gallery-${index}`} isCurrentUser={review.author === address} />
-              ))}
-              {visibleReviewsCount < reviews.length && (
-                <div className="text-center mt-4">
-                  <button className="btn btn-custom ps-3 pe-3" onClick={handleLoadMore}>
-                    <i className="bi bi-plus-circle-fill me-2"></i> Load more
-                  </button>
+            {isLoadingReviews ? (
+            <div className="text-center mt-4">
+                <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
                 </div>
-              )}
             </div>
-          </>
-        )}
-      </section>
+            ) : (
+                reviewFilesCount === 0 ? (
+                    <div className="alert alert-primary my-4" role="alert">
+                        There are no reviews yet. Be the first to leave a review!
+                    </div>
+                ) : (
+                <>
+                    <p className="review-count">Showing {Math.min(visibleReviewsCount, reviewFilesCount)} of {reviewFilesCount} reviews</p>
+                    <div className="review-list mt-4">
+                    {reviews.slice(0, visibleReviewsCount).map((review, index) => (
+                        <ReviewCard key={index} {...review} fancyboxId={`gallery-${index}`} isCurrentUser={review.author === address} />
+                    ))}
+                    {visibleReviewsCount < reviews.length && (
+                        <div className="text-center mt-4">
+                        <button className="btn btn-custom ps-3 pe-3" onClick={handleLoadMore}>
+                            <i className="bi bi-plus-circle-fill me-2"></i> Load more
+                        </button>
+                        </div>
+                    )}
+                    </div>
+                </>
+                )
+            )}
+        </section>
+      )}
     </div>
   );
 };

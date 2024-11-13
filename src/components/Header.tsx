@@ -45,7 +45,6 @@ const Header: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Centered Menu for Desktop */}
                     <div className="d-none d-md-flex mx-auto">
                         <ul className="navbar-nav">
                             <li className="nav-item">
